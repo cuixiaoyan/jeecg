@@ -1,145 +1,272 @@
 <%@ page language="java" import="java.util.*" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="/context/mytags.jsp"%>
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>常规模版</title>
-<meta name="description" content="">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<t:base type="bootstrap,bootstrap-table,layer,validform,webuploader,bootstrap-form"></t:base>
-</head>
- <body style="overflow:hidden;overflow-y:auto;margin-top: 20px">
- <form id="formobj" action="cxyConventionalController.do?doUpdate" class="form-horizontal validform" role="form"  method="post">
-	<input type="hidden" id="btn_sub" class="btn_sub"/>
-	<input type="hidden" id="id" name="id" value="${cxyConventionalPage.id}"/>
-	<div class="form-group">
-		<label for="name" class="col-sm-3 control-label">名字：</label>
-		<div class="col-sm-7">
-			<div class="input-group" style="width:100%">
-				<input id="name" name="name" value='${cxyConventionalPage.name}' type="text" maxlength="32" class="form-control input-sm" placeholder="请输入名字"  validType="cxy_conventional,name,id" datatype="*" ignore="checked" />
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="age" class="col-sm-3 control-label">年龄：</label>
-		<div class="col-sm-7">
-			<div class="input-group" style="width:100%">
-				<input id="age" name="age" value='${cxyConventionalPage.age}' type="text" maxlength="32" class="form-control input-sm" placeholder="请输入年龄"  ignore="ignore" />
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="sex" class="col-sm-3 control-label">性别：</label>
-		<div class="col-sm-7">
-			<div class="input-group" style="width:100%">
-				<t:dictSelect field="sex" type="radio" extendJson="{class:'i-checks'}"  typeGroupCode="sex"  hasLabel="false"  title="性别" defaultVal="${cxyConventionalPage.sex}"></t:dictSelect>
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="phone" class="col-sm-3 control-label">手机：</label>
-		<div class="col-sm-7">
-			<div class="input-group" style="width:100%">
-				<input id="phone" name="phone" value='${cxyConventionalPage.phone}' type="text" maxlength="32" class="form-control input-sm" placeholder="请输入手机"  validType="cxy_conventional,phone,id" datatype="*" ignore="checked" />
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="avatar" class="col-sm-3 control-label">头像：</label>
-		<div class="col-sm-7">
-			<div class="input-group" style="width:100%">
-				<t:webUploader name="avatar" outJs="true" auto="true" showImgDiv="filediv_avatar" type="image" buttonText='添加图片' displayTxt="false" pathValues="${cxyConventionalPage.avatar}"></t:webUploader>
-				<div class="form" id="filediv_avatar"></div>
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="resume" class="col-sm-3 control-label">简历：</label>
-		<div class="col-sm-7">
-			<div class="input-group" style="width:100%">
-				<t:webUploader name="resume" outJs="true" auto="true" showImgDiv="filediv_resume" pathValues="${cxyConventionalPage.resume}"></t:webUploader>
-				<div class="form" id="filediv_resume"></div>
-			</div>
-		</div>
-	</div>
-		<div class="form-group">
-			<label for="introduction" class="col-sm-3 control-label">自我介绍：</label>
-			<div class="col-sm-7">
-				<div class="input-group" style="width:100%">
-					<textarea id="introduction" name="introduction" class="form-control" placeholder="请输入自我介绍" rows="4">${cxyConventionalPage.introduction}</textarea>
-				</div>
-			</div>
-		</div>
-</form>
-<script type="text/javascript">
-	var subDlgIndex = '';
-	$(document).ready(function() {
-		
-		//单选框/多选框初始化
-		$('.i-checks').iCheck({
-			labelHover : false,
-			cursor : true,
-			checkboxClass : 'icheckbox_square-green',
-			radioClass : 'iradio_square-green',
-			increaseArea : '20%'
-		});
-		
-		//表单提交
-		$("#formobj").Validform({
-			tiptype:function(msg,o,cssctl){
-				if(o.type==3){
-					validationMessage(o.obj,msg);
-				}else{
-					removeMessage(o.obj);
+<html>
+ <head>
+  <title>常规模版</title>
+  <t:base type="jquery,easyui,tools,DatePicker"></t:base>
+  <t:base type="uploadify"></t:base>
+  <script type="text/javascript">
+  //编写自定义JS代码
+  </script>
+ </head>
+ <body>
+		<t:formvalid formid="formobj" dialog="true" usePlugin="password" layout="table" action="cxyConventionalController.do?doUpdate" callback="jeecgFormFileCallBack@Override">
+					<input id="id" name="id" type="hidden" value="${cxyConventionalPage.id }"/>
+		<table style="width: 600px;" cellpadding="0" cellspacing="1" class="formtable">
+					<tr>
+						<td align="right">
+							<label class="Validform_label">
+								名字:
+							</label>
+						</td>
+						<td class="value">
+						    <input id="name" name="name" type="text" maxlength="32" style="width: 150px" class="inputxt"  validType="cxy_conventional,name,id" datatype="*" ignore="checked"  value='${cxyConventionalPage.name}'/>
+							<span class="Validform_checktip"></span>
+							<label class="Validform_label" style="display: none;">名字</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">
+							<label class="Validform_label">
+								年龄:
+							</label>
+						</td>
+						<td class="value">
+						    <input id="age" name="age" type="text" maxlength="32" style="width: 150px" class="inputxt"  ignore="ignore"  value='${cxyConventionalPage.age}'/>
+							<span class="Validform_checktip"></span>
+							<label class="Validform_label" style="display: none;">年龄</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">
+							<label class="Validform_label">
+								性别:
+							</label>
+						</td>
+						<td class="value">
+									<t:dictSelect field="sex" type="radio"  typeGroupCode="sex"   defaultVal="${cxyConventionalPage.sex}" hasLabel="false"  title="性别" ></t:dictSelect>     
+							<span class="Validform_checktip"></span>
+							<label class="Validform_label" style="display: none;">性别</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">
+							<label class="Validform_label">
+								手机:
+							</label>
+						</td>
+						<td class="value">
+						    <input id="phone" name="phone" type="text" maxlength="32" style="width: 150px" class="inputxt"  validType="cxy_conventional,phone,id" datatype="*" ignore="checked"  value='${cxyConventionalPage.phone}'/>
+							<span class="Validform_checktip"></span>
+							<label class="Validform_label" style="display: none;">手机</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">
+							<label class="Validform_label">
+								头像:
+							</label>
+						</td>
+						<td class="value">
+		<table id="avatar_fileTable"></table>
+		<div class="form jeecgDetail">
+			<t:upload name="avatar" id="avatar" queueID="filediv_avatar" outhtml="false" uploader="cgUploadController.do?saveFiles"  extend="pic" buttonText='添加图片'  onUploadStart="avatarOnUploadStart"> </t:upload>
+			<div class="form" id="filediv_avatar"></div>
+			<script type="text/javascript">
+				function avatarOnUploadStart(file){
+					var cgFormId=$("input[name='id']").val();
+					$('#avatar').uploadify("settings", "formData", {
+						'cgFormId':cgFormId,
+						'cgFormName':'cxy_conventional',
+						'cgFormField':'AVATAR'
+					});
 				}
-			},
-			btnSubmit : "#btn_sub",
-			btnReset : "#btn_reset",
-			ajaxPost : true,
-			beforeSubmit : function(curform) {
-			},
-			usePlugin : {
-				passwordstrength : {
-					minLen : 6,
-					maxLen : 18,
-					trigger : function(obj, error) {
-						if (error) {
-							obj.parent().next().find(".Validform_checktip").show();
-							obj.find(".passwordStrength").hide();
-						} else {
-							$(".passwordStrength").show();
-							obj.parent().next().find(".Validform_checktip").hide();
+			</script>
+		</div>
+							<span class="Validform_checktip"></span>
+							<label class="Validform_label" style="display: none;">头像</label>
+						</td>
+					</tr>
+					<tr>
+						<td align="right">
+							<label class="Validform_label">
+								简历:
+							</label>
+						</td>
+						<td class="value">
+		<table id="resume_fileTable"></table>
+		<div class="form jeecgDetail">
+			<t:upload name="resume" id="resume" queueID="filediv_resume" outhtml="false" uploader="cgUploadController.do?saveFiles"  extend="office" buttonText='添加文件'  onUploadStart="resumeOnUploadStart"> </t:upload>
+			<div class="form" id="filediv_resume"></div>
+			<script type="text/javascript">
+				function resumeOnUploadStart(file){
+					var cgFormId=$("input[name='id']").val();
+					$('#resume').uploadify("settings", "formData", {
+						'cgFormId':cgFormId,
+						'cgFormName':'cxy_conventional',
+						'cgFormField':'RESUME'
+					});
+				}
+			</script>
+		</div>
+							<span class="Validform_checktip"></span>
+							<label class="Validform_label" style="display: none;">简历</label>
+						</td>
+					</tr>
+				
+					<tr>
+						<td align="right">
+							<label class="Validform_label">
+								自我介绍:
+							</label>
+						</td>
+						<td class="value" >
+						  	 	<textarea id="introduction" style="height:auto;width:95%;" class="inputxt" rows="6" name="introduction"  ignore="ignore" >${cxyConventionalPage.introduction}</textarea>
+							<span class="Validform_checktip"></span>
+							<label class="Validform_label" style="display: none;">自我介绍</label>
+						</td>
+					</tr>
+			</table>
+		</t:formvalid>
+ </body>
+	  	<script type="text/javascript">
+		  	//加载 已存在的 文件
+		  	$(function(){
+	  			var cgFormId=$("input[name='id']").val();
+		  		$.ajax({
+		  		   type: "post",
+		  		   url: "cxyConventionalController.do?getFiles&id=" +  cgFormId,
+		  		   success: function(data){
+		  			 var arrayFileObj = jQuery.parseJSON(data).obj;
+		  			 
+		  			$.each(arrayFileObj,function(n,file){
+		  				var fieldName = file.field.toLowerCase();
+		  				var table = $("#"+fieldName+"_fileTable");
+		  				var tr = $("<tr style=\"height:34px;\"></tr>");
+		  				var title = file.title;
+		  				if(title.length > 15){
+		  					title = title.substring(0,12) + "...";
+		  				}
+		  				var td_title = $("<td>" + title + "</td>");
+		  		  		var td_download = $("<td><a style=\"margin-left:10px;\" href=\"commonController.do?viewFile&fileid=" + file.fileKey + "&subclassname=org.jeecgframework.web.cgform.entity.upload.CgUploadEntity\" title=\"下载\">下载</a></td>")
+		  		  		var td_view = $("<td><a style=\"margin-left:10px;\" href=\"javascript:void(0);\" onclick=\"openwindow('预览','commonController.do?openViewFile&fileid=" + file.fileKey + "&subclassname=org.jeecgframework.web.cgform.entity.upload.CgUploadEntity','fList',700,500)\">预览</a></td>");
+		  		  		tr.appendTo(table);
+		  		  		td_title.appendTo(tr);
+		  		  		td_download.appendTo(tr);
+		  		  		td_view.appendTo(tr);
+		  		  		if(location.href.indexOf("load=detail")==-1){
+			  		  		var td_del = $("<td><a style=\"margin-left:10px;\" href=\"javascript:void(0)\" class=\"jeecgDetail\" onclick=\"del('cgUploadController.do?delFile&id=" + file.fileKey + "',this)\">删除</a></td>");
+			  		  		td_del.appendTo(tr);
+		  		  		}
+		  			 });
+		  		   }
+		  		});
+		  	});
+		  	
+		  	/**
+		 	 * 删除图片数据资源
+		 	 */
+		  	function del(url,obj){
+		  		var content = "请问是否要删除该资源";
+		  		var navigatorName = "Microsoft Internet Explorer"; 
+		  		if( navigator.appName == navigatorName ){ 
+		  			$.dialog.confirm(content, function(){
+		  				submit(url,obj);
+		  			}, function(){
+		  			});
+		  		}else{
+		  			layer.open({
+						title:"提示",
+						content:content,
+						icon:7,
+						yes:function(index){
+							submit(url,obj);
+						},
+						btn:['确定','取消'],
+						btn2:function(index){
+							layer.close(index);
+						}
+					});
+		  		}
+		  	}
+		  	
+		  	function submit(url,obj){
+		  		$.ajax({
+		  			async : false,
+		  			cache : false,
+		  			type : 'POST',
+		  			url : url,// 请求的action路径
+		  			error : function() {// 请求失败处理函数
+		  			},
+		  			success : function(data) {
+		  				var d = $.parseJSON(data);
+		  				if (d.success) {
+		  					var msg = d.msg;
+		  					tip(msg);
+		  					obj.parentNode.parentNode.parentNode.deleteRow(obj.parentNode.parentNode);
+		  				} else {
+		  					tip(d.msg);
+		  				}
+		  			}
+		  		});
+		  	}
+		  	
+	  		function jeecgFormFileCallBack(data){
+	  			if (data.success == true) {
+					uploadFile(data);
+				} else {
+					if (data.responseText == '' || data.responseText == undefined) {
+						$.messager.alert('错误', data.msg);
+						$.Hidemsg();
+					} else {
+						try {
+							var emsg = data.responseText.substring(data.responseText.indexOf('错误描述'), data.responseText.indexOf('错误信息'));
+							$.messager.alert('错误', emsg);
+							$.Hidemsg();
+						} catch(ex) {
+							$.messager.alert('错误', data.responseText + '');
 						}
 					}
+					return false;
 				}
-			},
-			callback : function(data) {
-				var win = frameElement.api.opener;
-				if (data.success == true) {
-					frameElement.api.close();
-				    win.reloadTable();
-				    win.tip(data.msg);
-				} else {
-				    if (data.responseText == '' || data.responseText == undefined) {
-				        $.messager.alert('错误', data.msg);
-				        $.Hidemsg();
-				    } else {
-				        try {
-				            var emsg = data.responseText.substring(data.responseText.indexOf('错误描述'), data.responseText.indexOf('错误信息'));
-				            $.messager.alert('错误', emsg);
-				            $.Hidemsg();
-				        } catch (ex) {
-				            $.messager.alert('错误', data.responseText + "");
-				            $.Hidemsg();
-				        }
-				    }
-				    return false;
+				if (!neibuClickFlag) {
+					var win = frameElement.api.opener;
+					win.reloadTable();
+				}
+	  		}
+	  		function upload() {
+					$('#avatar').uploadify('upload', '*');	
+					$('#resume').uploadify('upload', '*');	
+			}
+			
+			var neibuClickFlag = false;
+			function neibuClick() {
+				neibuClickFlag = true; 
+				$('#btn_sub').trigger('click');
+			}
+			function cancel() {
+					$('#avatar').uploadify('cancel', '*');	
+					$('#resume').uploadify('cancel', '*');	
+			}
+			function uploadFile(data){
+				if(!$("input[name='id']").val()){
+					if(data.obj!=null && data.obj!='undefined'){
+						$("input[name='id']").val(data.obj.id);
+					}
+				}
+				if($(".uploadify-queue-item").length>0){
+					upload();
+				}else{
+					if (neibuClickFlag){
+						alert(data.msg);
+						neibuClickFlag = false;
+					}else {
+						var win = frameElement.api.opener;
+						win.reloadTable();
+						win.tip(data.msg);
+						frameElement.api.close();
+					}
 				}
 			}
-		});
-	});
-</script>
-</body>
-</html>
+	  	</script>
