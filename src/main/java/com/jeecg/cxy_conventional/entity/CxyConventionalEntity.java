@@ -3,6 +3,7 @@ package com.jeecg.cxy_conventional.entity;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.lang.String;
+import java.io.UnsupportedEncodingException;
 import java.lang.Double;
 import java.lang.Integer;
 import java.math.BigDecimal;
@@ -14,6 +15,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.SequenceGenerator;
 import org.jeecgframework.poi.excel.annotation.Excel;
@@ -22,7 +25,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
  * @Title: Entity
  * @Description: 常规模版
  * @author onlineGenerator
- * @date 2020-04-21 17:07:48
+ * @date 2020-04-22 11:33:27
  * @version V1.0   
  *
  */
@@ -86,6 +89,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setId(java.lang.String id){
 		this.id = id;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  创建人名称
@@ -103,6 +107,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setCreateName(java.lang.String createName){
 		this.createName = createName;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  创建人登录名称
@@ -120,6 +125,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setCreateBy(java.lang.String createBy){
 		this.createBy = createBy;
 	}
+	
 	/**
 	 *方法: 取得java.util.Date
 	 *@return: java.util.Date  创建日期
@@ -137,6 +143,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setCreateDate(java.util.Date createDate){
 		this.createDate = createDate;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  更新人名称
@@ -154,6 +161,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setUpdateName(java.lang.String updateName){
 		this.updateName = updateName;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  更新人登录名称
@@ -171,6 +179,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setUpdateBy(java.lang.String updateBy){
 		this.updateBy = updateBy;
 	}
+	
 	/**
 	 *方法: 取得java.util.Date
 	 *@return: java.util.Date  更新日期
@@ -188,6 +197,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setUpdateDate(java.util.Date updateDate){
 		this.updateDate = updateDate;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  名字
@@ -205,6 +215,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setName(java.lang.String name){
 		this.name = name;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  年龄
@@ -222,6 +233,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setAge(java.lang.String age){
 		this.age = age;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  性别
@@ -239,6 +251,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setSex(java.lang.String sex){
 		this.sex = sex;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  手机
@@ -256,6 +269,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setPhone(java.lang.String phone){
 		this.phone = phone;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  头像
@@ -273,6 +287,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setAvatar(java.lang.String avatar){
 		this.avatar = avatar;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  简历
@@ -290,6 +305,7 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setResume(java.lang.String resume){
 		this.resume = resume;
 	}
+	
 	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  自我介绍
@@ -307,4 +323,5 @@ public class CxyConventionalEntity implements java.io.Serializable {
 	public void setIntroduction(java.lang.String introduction){
 		this.introduction = introduction;
 	}
+	
 }
