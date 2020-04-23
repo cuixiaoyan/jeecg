@@ -69,7 +69,7 @@
 			    </el-form-item>
 			</el-form>
 		</el-row>
-		
+
 		<!--列表-->
 		<el-table :data="cxyConventionals" border stripe size="mini" highlight-current-row v-loading="listLoading" @sort-change="handleSortChange"  @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="55"></el-table-column>
@@ -96,16 +96,16 @@
 				</template>
 			</el-table-column>
 		</el-table>
-		
+
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-button type="danger" size="mini" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
 			 <el-pagination small background @current-change="handleCurrentChange" @size-change="handleSizeChange" :page-sizes="[10, 20, 50, 100]"
       			:page-size="pageSize" :total="total" layout="sizes, prev, pager, next"  style="float:right;"></el-pagination>
 		</el-col>
-		
+
 		<!--新增界面-->
-		<el-dialog :title="formTitle" fullscreen z-index="800" :visible.sync="formVisible" :close-on-click-modal="false">
+		<el-dialog width="50%" lock-scroll="true" :title="formTitle" close-on-press-escape  :visible.sync="formVisible" :close-on-click-modal="true">
 			<el-form :model="form" label-width="80px" :rules="formRules" ref="form" size="mini">
 					<el-form-item label="名字" prop="name">
 						<el-input v-model="form.name" auto-complete="off" placeholder="请输入名字"></el-input>
@@ -154,7 +154,7 @@
 	</div>
 </body>
 <script>
-	var vue = new Vue({			
+	var vue = new Vue({
 		el:"#cxyConventionalList",
 		data() {
 			return {
@@ -185,7 +185,7 @@
 				},
 				listLoading: false,
 				sels: [],//列表选中列
-				
+
 				formTitle:'新增',
 				formVisible: false,//表单界面是否显示
 				formLoading: false,
@@ -193,13 +193,13 @@
 				},
 				//表单界面数据
 				form: {},
-				
+
 				formFile: {
 					avatar:[],
 					resume:[],
 				},
-				
-				//数据字典 
+
+				//数据字典
 		   		sexOptions:[],
 			}
 		},
@@ -398,9 +398,9 @@
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.formLoading = true;
 							let para = Object.assign({}, this.form);
-							
-							
-							
+
+
+
 							this.$http.post(!!para.id?this.url.edit:this.url.save,para,{emulateJSON: true}).then((res) => {
 								this.formLoading = false;
 								this.$message({
@@ -470,7 +470,7 @@
 			this.getCxyConventionals();
 		}
 	});
-	
+
 	function utilFormatDate(date, pattern) {
         pattern = pattern || "yyyy-MM-dd";
         return pattern.replace(/([yMdhsm])(\1*)/g, function ($0) {
@@ -491,7 +491,7 @@
 	    return s;
 	};
 	function reloadTable(){
-		
+
 	}
 </script>
 </html>
