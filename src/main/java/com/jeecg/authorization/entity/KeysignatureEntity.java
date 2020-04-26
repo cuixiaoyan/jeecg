@@ -47,30 +47,31 @@ public class KeysignatureEntity implements java.io.Serializable {
 	private java.lang.String updateBy;
 	/**更新日期*/
 	private java.util.Date updateDate;
-	/**公钥*/
-	@Excel(name="公钥",width=15)
-	private java.lang.String publicKey;
-	/**私钥*/
-	@Excel(name="私钥",width=15)
-	private java.lang.String privateKey;
 	/**用户名称*/
 	@Excel(name="用户名称",width=15)
 	private java.lang.String userName;
 	/**截止时间*/
-	@Excel(name="截止时间",width=15,format = "yyyy-MM-dd")
+	@Excel(name="截止时间",width=15)
 	private java.lang.String byTime;
 	/**授权模块*/
 	@Excel(name="授权模块",width=15)
 	private java.lang.String authorizationModule;
-	/**签名*/
-	@Excel(name="签名",width=15)
-	private java.lang.String signature;
 	/**明文*/
 	@Excel(name="明文",width=15)
 	private java.lang.String clear;
 	/**密文*/
 	@Excel(name="密文",width=15)
 	private java.lang.String cipher;
+	/**公钥*/
+	@Excel(name="公钥",width=15)
+	private java.lang.String publicKey;
+	/**私钥*/
+	@Excel(name="私钥",width=15)
+	private java.lang.String privateKey;
+	/**签名*/
+	//@Excel(name="签名",width=15)
+	private java.lang.String signature;
+
 
 
 

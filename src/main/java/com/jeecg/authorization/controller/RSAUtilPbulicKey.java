@@ -1,6 +1,7 @@
 package com.jeecg.authorization.controller;
 
 import org.apache.commons.net.util.Base64;
+import org.springframework.stereotype.Controller;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author: cuixy
  * @create: 2020-04-24 11:03
  **/
+@Controller
 public class RSAUtilPbulicKey {
 
     public static String data = "12345";
@@ -110,6 +112,18 @@ public class RSAUtilPbulicKey {
         return new String(decryptText);
     }
 
+    // 公钥解密
+    public static String decryptByPublicKey(String publicKeyString, String content) throws Exception {
+        // 获取公钥
+        PublicKey publicKey = getPublicKey(publicKeyString);
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, publicKey);
+        byte[] cipherText = base64Decoder.decodeBuffer(content);
+        byte[] decryptText = cipher.doFinal(cipherText);
+        return new String(decryptText);
+    }
+
+
 
     public static void main(String[] args) throws Exception {
 
@@ -117,14 +131,15 @@ public class RSAUtilPbulicKey {
         privateKeyStr = new String(Base64.encodeBase64(keyPair.getPrivate().getEncoded()));
         publicKeyStr = new String(Base64.encodeBase64(keyPair.getPublic().getEncoded()));
 
-        System.out.println("密文：" + privateKeyStr);
-        System.out.println("明文：" + publicKeyStr);
+        System.out.println("私钥：" + privateKeyStr);
+        System.out.println("公钥：" + publicKeyStr);
         // 私钥加密
         String encryptedBytes2 = encryptByPrivateKey(data);
         System.out.println("私钥加密后：" + encryptedBytes2);
         // 公钥解密
         String decryptedBytes2 = decryptByPublicKey(encryptedBytes2);
         System.out.println("公钥解密后：" + decryptedBytes2);
+
     }
 
 

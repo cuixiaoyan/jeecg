@@ -3,6 +3,9 @@ package com.jeecg.authorization.controller;
 import com.jeecg.authorization.entity.KeysignatureEntity;
 import com.jeecg.authorization.service.KeysignatureServiceI;
 
+import java.io.*;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,8 +35,6 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.entity.vo.NormalExcelConstants;
 import org.jeecgframework.core.util.ResourceUtil;
-
-import java.io.IOException;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -84,6 +85,7 @@ public class KeysignatureController extends BaseController {
     @RequestMapping(params = "datagrid")
     public void datagrid(KeysignatureEntity keysignature, HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid) {
         CriteriaQuery cq = new CriteriaQuery(KeysignatureEntity.class, dataGrid);
+        keysignature.setUserName("*" + keysignature.getUserName() + "*");
         //查询条件组装器
         org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, keysignature, request.getParameterMap());
         cq.add();
@@ -141,6 +143,62 @@ public class KeysignatureController extends BaseController {
         }
         j.setMsg(message);
         return j;
+    }
+
+    /**
+     * 下载公钥
+     *
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping(params = "downloadPublicKey")
+    @ResponseBody
+    public void downloadPublicKey(HttpServletRequest request, HttpServletResponse response, String id) throws Exception {
+        try {
+            KeysignatureEntity t = keysignatureService.get(KeysignatureEntity.class, id);
+            String fileName = URLEncoder.encode(t.getUserName() + "-公钥.txt", StandardCharsets.UTF_8.toString());
+            // 下面设置方法可以解决文件名乱码问题
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName);
+            OutputStream out = response.getOutputStream();
+            out.write((t.getPublicKey()).getBytes());
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //            //解密测试
+//            String s = rSAUtilPbulicKey.decryptByPublicKey(t.getPublicKey(), t.getCipher());
+//            System.out.println(s);
+
+    /**
+     * 下载密文
+     *
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping(params = "downloadCipher")
+    @ResponseBody
+    public void downloadCipher(HttpServletRequest request, HttpServletResponse response, String id) throws Exception {
+        try {
+            KeysignatureEntity t = keysignatureService.get(KeysignatureEntity.class, id);
+            String fileName = URLEncoder.encode(t.getUserName() + "-密文.txt", StandardCharsets.UTF_8.toString());
+            // 下面设置方法可以解决文件名乱码问题
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName);
+            OutputStream out = response.getOutputStream();
+            out.write((t.getCipher()).getBytes());
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
