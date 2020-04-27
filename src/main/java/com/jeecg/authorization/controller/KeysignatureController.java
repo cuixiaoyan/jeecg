@@ -9,6 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -145,6 +148,75 @@ public class KeysignatureController extends BaseController {
         return j;
     }
 
+
+    /**
+     * 下载授权压缩包
+     *
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    @RequestMapping(params = "downloadAuthorization")
+    @ResponseBody
+    public void downloadAuthorization(HttpServletRequest request, HttpServletResponse response, String id) throws Exception {
+        KeysignatureEntity t = keysignatureService.get(KeysignatureEntity.class, id);
+        String fileName = URLEncoder.encode(t.getUserName() + ".zip", StandardCharsets.UTF_8.toString());
+        response.setContentType("application/zip");
+        // 下面设置方法可以解决文件名乱码问题
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"; filename*=utf-8''" + fileName);
+        List<File> files = new ArrayList<File>();
+
+        //公钥
+        File publicKeyFile = new File("publicKey.txt");
+        FileWriter publicKeyWriter = new FileWriter(publicKeyFile);
+        publicKeyWriter.write(t.getPublicKey());
+        files.add(publicKeyFile);
+        publicKeyWriter.close();
+
+        //密文
+        File cipherFile = new File("cipher.txt");
+        FileWriter cipherWriter = new FileWriter(cipherFile);
+        cipherWriter.write(t.getCipher());
+        files.add(cipherFile);
+        cipherWriter.close();
+
+        //说明
+        File instructionsFile = new File("instructions.txt");
+        FileWriter instructionsWriter = new FileWriter(instructionsFile);
+        instructionsWriter.write("用户名称:" + t.getUserName() + ";");
+        instructionsWriter.write("截止时间:" + t.getByTime() + ";");
+        instructionsWriter.write("授权模块:" + t.getAuthorizationModule() + ";");
+        files.add(instructionsFile);
+        instructionsWriter.close();
+
+
+        ZipOutputStream out = null;
+        try {
+            byte[] buffer = new byte[1024];
+            out = new ZipOutputStream(response.getOutputStream());
+            for (File file : files) {
+                FileInputStream fis = new FileInputStream(file);
+                out.putNextEntry(new ZipEntry(file.getName()));
+                int len;
+                //读入需要下载的文件的内容，打包到zip文件
+                while ((len = fis.read(buffer)) != -1) {
+                    out.write(buffer, 0, len);
+                }
+                out.flush();
+                out.closeEntry();
+                fis.close();
+            }
+            //输出到浏览器
+            OutputStream ou = out;
+            ou.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      * 下载公钥
      *
@@ -154,7 +226,8 @@ public class KeysignatureController extends BaseController {
      */
     @RequestMapping(params = "downloadPublicKey")
     @ResponseBody
-    public void downloadPublicKey(HttpServletRequest request, HttpServletResponse response, String id) throws Exception {
+    public void downloadPublicKey(HttpServletRequest request, HttpServletResponse response, String id) throws
+            Exception {
         try {
             KeysignatureEntity t = keysignatureService.get(KeysignatureEntity.class, id);
             String fileName = URLEncoder.encode(t.getUserName() + "-公钥.txt", StandardCharsets.UTF_8.toString());
@@ -171,9 +244,6 @@ public class KeysignatureController extends BaseController {
 
     }
 
-    //            //解密测试
-//            String s = rSAUtilPbulicKey.decryptByPublicKey(t.getPublicKey(), t.getCipher());
-//            System.out.println(s);
 
     /**
      * 下载密文
@@ -184,7 +254,8 @@ public class KeysignatureController extends BaseController {
      */
     @RequestMapping(params = "downloadCipher")
     @ResponseBody
-    public void downloadCipher(HttpServletRequest request, HttpServletResponse response, String id) throws Exception {
+    public void downloadCipher(HttpServletRequest request, HttpServletResponse response, String id) throws
+            Exception {
         try {
             KeysignatureEntity t = keysignatureService.get(KeysignatureEntity.class, id);
             String fileName = URLEncoder.encode(t.getUserName() + "-密文.txt", StandardCharsets.UTF_8.toString());
@@ -199,6 +270,30 @@ public class KeysignatureController extends BaseController {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * 公钥校验
+     *
+     * @param ids
+     * @return
+     */
+    @RequestMapping(params = "publicKeyCheck")
+    @ResponseBody
+    public AjaxJson publicKeyCheck(KeysignatureEntity keysignature, HttpServletRequest request) throws Exception {
+        String message = null;
+        AjaxJson j = new AjaxJson();
+        message = "公钥校验成功";
+        try {
+            String clear = rSAUtilPbulicKey.decryptByPublicKey(keysignature.getPublicKey(), keysignature.getCipher());
+            message = message + ",明文信息如下: " + clear;
+        } catch (IOException e) {
+            e.printStackTrace();
+            message = "公钥校验失败";
+            throw new BusinessException(e.getMessage());
+        }
+        j.setMsg(message);
+        return j;
     }
 
 
@@ -295,7 +390,8 @@ public class KeysignatureController extends BaseController {
      * @param response
      */
     @RequestMapping(params = "exportXls")
-    public String exportXls(KeysignatureEntity keysignature, HttpServletRequest request, HttpServletResponse response
+    public String exportXls(KeysignatureEntity keysignature, HttpServletRequest request, HttpServletResponse
+            response
             , DataGrid dataGrid, ModelMap modelMap) {
         CriteriaQuery cq = new CriteriaQuery(KeysignatureEntity.class, dataGrid);
         org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, keysignature, request.getParameterMap());
@@ -315,7 +411,8 @@ public class KeysignatureController extends BaseController {
      * @param response
      */
     @RequestMapping(params = "exportXlsByT")
-    public String exportXlsByT(KeysignatureEntity keysignature, HttpServletRequest request, HttpServletResponse response
+    public String exportXlsByT(KeysignatureEntity keysignature, HttpServletRequest request, HttpServletResponse
+            response
             , DataGrid dataGrid, ModelMap modelMap) {
         modelMap.put(NormalExcelConstants.FILE_NAME, "密钥签名授权");
         modelMap.put(NormalExcelConstants.CLASS, KeysignatureEntity.class);

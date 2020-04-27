@@ -60,10 +60,10 @@
 						<el-input v-model="filters.userName" placeholder="用户名称"></el-input>
 					</el-form-item>
 					<el-form-item style="margin-bottom: 8px;" prop="byTime_begin">
-						<el-date-picker  type="date" placeholder="选择截止时间开始" v-model="filters.byTime_begin" :picker-options="pickerOptionsStart" @change="changeEnd" ></el-date-picker>
+						<el-date-picker  type="date" placeholder="选择截止开始时间" v-model="filters.byTime_begin" :picker-options="pickerOptionsStart" @change="changeEnd" ></el-date-picker>
 					</el-form-item>
 					<el-form-item style="margin-bottom: 8px;" prop="byTime_end">
-						<el-date-picker  type="date" placeholder="选择截止时间结束" v-model="filters.byTime_end" :picker-options="pickerOptionsEnd" @change="changeStart" ></el-date-picker>
+						<el-date-picker  type="date" placeholder="选择截止结束时间" v-model="filters.byTime_end" :picker-options="pickerOptionsEnd" @change="changeStart" ></el-date-picker>
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" icon="el-icon-search" v-on:click="getKeysignatures">查询</el-button>
@@ -82,6 +82,9 @@
 					</el-form-item>
 					<el-form-item>
 						<el-button type="primary" @click="ImportXls">导入<i class="el-icon-upload el-icon--right"></i></el-button>
+					</el-form-item>
+					<el-form-item>
+						<el-button type="success" plain icon="el-icon-search" @click="publicKeyCheck">校验</el-button>
 					</el-form-item>
 				</el-row>
 
@@ -105,8 +108,8 @@
 			<el-table-column label="操作" width="220">
 				<template scope="scope">
 					<el-button type="primary" icon="el-icon-edit" size="mini" @click="handleEdit(scope.$index, scope.row)"></el-button>
-					<el-button type="primary" size="mini" @click="downloadPublicKey(scope.$index, scope.row)">公钥</el-button>
-					<el-button type="warning" size="mini" @click="downloadCipher(scope.$index, scope.row)">密文</el-button>
+					<el-button type="info" plain size="mini" @click="downloadPublicKey(scope.$index, scope.row)">公钥</el-button>
+					<el-button type="warning" plain size="mini" @click="downloadCipher(scope.$index, scope.row)">密文</el-button>
 					<%--<el-button type="danger" size="mini" @click="handleDel(scope.$index, scope.row)">删除</el-button>--%>
 				</template>
 			</el-table-column>
@@ -125,7 +128,7 @@
 					<el-form-item label="用户名称" prop="userName">
 						<el-input v-model="form.userName" auto-complete="off" placeholder="请输入用户名称"></el-input>
 					</el-form-item>
-					<el-form-item label="截止时间">
+					<el-form-item label="截止时间" prop="byTime">
 						<el-date-picker type="date" placeholder="选择截止时间" v-model="form.byTime"></el-date-picker>
 					</el-form-item>
 					<el-form-item label="授权模块" prop="authorizationModule">
@@ -152,6 +155,24 @@
 				<el-button type="primary" @click.native="formSubmit" :loading="formLoading">提交</el-button>
 			</div>
 		</el-dialog>
+
+		<!--校验-->
+		<el-dialog width="50%" :title="formTitle"  z-index="800" :visible.sync="publicKeyCheckVisible" :close-on-click-modal="false">
+			<el-form :model="form" label-width="80px" :rules="publicKeyCheckFormRules" ref="form" size="mini">
+				<el-form-item label="公钥" prop="publicKey">
+				<el-input type="textarea" name="publicKey" v-model="form.publicKey"></el-input>
+				</el-form-item>
+				<el-form-item label="密文" prop="cipher">
+				<el-input type="textarea" name="cipher" v-model="form.cipher"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click.native="publicKeyCheckVisible = false">取消</el-button>
+				<el-button type="primary" @click.native="publicKeyCheckSubmit" :loading="formLoading">提交</el-button>
+			</div>
+		</el-dialog>
+
+
 	</div>
 </body>
 <script>
@@ -177,6 +198,8 @@
 					ImportXls:'${webRoot}/keysignatureController.do?upload',
                     downloadPublicKey:'${webRoot}/keysignatureController.do?downloadPublicKey&id=',
                     downloadCipher:'${webRoot}/keysignatureController.do?downloadCipher&id=',
+                    publicKeyCheck:'${webRoot}/keysignatureController.do?publicKeyCheck',
+
 
 				},
 				keysignatures: [],
@@ -192,9 +215,34 @@
 
 				formTitle:'新增',
 				formVisible: false,//表单界面是否显示
+                publicKeyCheckVisible:false,
 				formLoading: false,
 				formRules: {
+                    userName: [
+                        { required: true, message: '请输入用户名称', trigger: 'blur' },
+                        { min: 0, max: 15, message: '长度在15个字符之内', trigger: 'blur' }
+                    ],
+                    byTime: [
+                        { type: 'date', required: true, message: '请选择截止时间', trigger: 'change' }
+                    ],
+                    authorizationModule: [
+                        { required: true, message: '请输入授权模块', trigger: 'blur' },
+                        { min: 0, max: 50, message: '长度在50个字符之内', trigger: 'blur' }
+                    ],
+
 				},
+				//公钥校验页面
+                publicKeyCheckFormRules: {
+                    publicKey: [
+                        { required: true, message: '请输入公钥', trigger: 'blur' },
+                        { min: 0, max: 500, message: '长度在500个字符之内', trigger: 'blur' }
+                    ],
+                    cipher: [
+                        { required: true, message: '请输入密文', trigger: 'blur' },
+                        { min: 0, max: 500, message: '长度在500个字符之内', trigger: 'blur' }
+                    ],
+
+                },
 				//表单界面数据
 				form: {},
                 // 限制开始时间
@@ -325,7 +373,7 @@
 			formSubmit: function () {
 				this.$refs.form.validate((valid) => {
 					if (valid) {
-						this.$confirm('确认提交吗？', '提示', {}).then(() => {
+						//this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.formLoading = true;
 							let para = Object.assign({}, this.form);
 
@@ -343,10 +391,40 @@
 								this.formVisible = false;
 								this.getKeysignatures();
 							});
-						});
+						//});
 					}
 				});
 			},
+            //显示校验界面
+            publicKeyCheck: function () {
+                this.formTitle='校验';
+                this.publicKeyCheckVisible = true;
+                this.form = {
+                    publicKey:'',
+                    cipher:'',
+                };
+            },
+            //校验提交
+            publicKeyCheckSubmit: function () {
+                this.$refs.form.validate((valid) => {
+                    if (valid) {
+                        this.formLoading = true;
+                        let para = Object.assign({}, this.form);
+                        this.$http.post(this.url.publicKeyCheck,para,{emulateJSON: true}).then((res) => {
+                            this.formLoading = false;
+                        this.$message({
+                            message: res.body.msg,
+                            type: 'success',
+                            duration:2000
+                        });
+                        this.$refs['form'].resetFields();
+                        this.publicKeyCheckVisible = false;
+                        this.getKeysignatures();
+                    });
+                    }
+                });
+            },
+
 			selsChange: function (sels) {
 				this.sels = sels;
 			},
