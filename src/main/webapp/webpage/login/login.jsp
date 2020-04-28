@@ -49,7 +49,7 @@
           <div class="center">
             <h1 id="id-text2" class="grey">
               <i class="ace-icon fa fa-leaf green"></i>
-               cxy 系统
+               授权系统
             </h1>
 
           </div>

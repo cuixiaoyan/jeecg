@@ -15,6 +15,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jeecg.authorizedmenu.entity.AuthorizedmenuEntity;
+import com.jeecg.authorizedmenu.service.AuthorizedmenuServiceI;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,8 @@ public class KeysignatureController extends BaseController {
     private SystemService systemService;
     @Autowired
     private RSAUtilPbulicKey rSAUtilPbulicKey;
+    @Autowired
+    private AuthorizedmenuServiceI authorizedmenuService;
 
 
     /**
@@ -298,6 +302,32 @@ public class KeysignatureController extends BaseController {
 
 
     /**
+     * 获取授权模块
+     *
+     * @param ids
+     * @return
+     */
+    @RequestMapping(params = "getAuthorizationModule")
+    @ResponseBody
+    public AjaxJson getAuthorizationModule(HttpServletRequest request) {
+        String message = null;
+        AjaxJson j = new AjaxJson();
+        message = "获取授权模块成功";
+        try {
+            List<AuthorizedmenuEntity> authorizedmenuEntities = authorizedmenuService.loadAll(AuthorizedmenuEntity.class);
+            j.setObj(authorizedmenuEntities);
+        } catch (Exception e) {
+            e.printStackTrace();
+            message = "获取授权模块失败";
+            throw new BusinessException(e.getMessage());
+        }
+        j.setMsg(message);
+        return j;
+    }
+
+
+
+    /**
      * 添加密钥签名授权
      *
      * @param ids
@@ -311,7 +341,7 @@ public class KeysignatureController extends BaseController {
         message = "密钥签名授权添加成功";
         try {
             //拼接明文
-            String clear = keysignature.getUserName() + keysignature.getByTime() + keysignature.getAuthorizationModule();
+            String clear = keysignature.getUserName() + ";" + keysignature.getByTime() + ";" + keysignature.getAuthorizationModule();
             //生成公钥，私钥。
             Map<String, String> keyPairs = rSAUtilPbulicKey.getKeyPairs();
             //私钥加密，生成密文。
@@ -348,7 +378,7 @@ public class KeysignatureController extends BaseController {
         KeysignatureEntity t = keysignatureService.get(KeysignatureEntity.class, keysignature.getId());
         try {
             //拼接明文
-            String clear = keysignature.getUserName() + keysignature.getByTime() + keysignature.getAuthorizationModule();
+            String clear = keysignature.getUserName() + ";" + keysignature.getByTime() + ";" + keysignature.getAuthorizationModule();
             //生成公钥，私钥。
             Map<String, String> keyPairs = rSAUtilPbulicKey.getKeyPairs();
             //私钥加密，生成密文。

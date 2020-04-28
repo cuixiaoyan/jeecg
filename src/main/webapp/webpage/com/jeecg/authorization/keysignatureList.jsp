@@ -80,9 +80,9 @@
 					<el-form-item>
 						<el-button type="primary" icon="el-icon-edit" @click="ExportXls">导出</el-button>
 					</el-form-item>
-					<el-form-item>
-						<el-button type="primary" @click="ImportXls">导入<i class="el-icon-upload el-icon--right"></i></el-button>
-					</el-form-item>
+					<%--<el-form-item>--%>
+						<%--<el-button type="primary" @click="ImportXls">导入<i class="el-icon-upload el-icon--right"></i></el-button>--%>
+					<%--</el-form-item>--%>
 					<el-form-item>
 						<el-button type="success" plain icon="el-icon-search" @click="publicKeyCheck">校验</el-button>
 					</el-form-item>
@@ -108,9 +108,10 @@
 			<el-table-column label="操作" width="220">
 				<template scope="scope">
 					<el-button type="primary" icon="el-icon-edit" size="mini" @click="handleEdit(scope.$index, scope.row)"></el-button>
-					<el-button type="info" plain size="mini" @click="downloadPublicKey(scope.$index, scope.row)">公钥</el-button>
-					<el-button type="warning" plain size="mini" @click="downloadCipher(scope.$index, scope.row)">密文</el-button>
-					<%--<el-button type="danger" size="mini" @click="handleDel(scope.$index, scope.row)">删除</el-button>--%>
+					<el-button type="info" plain size="mini" @click="downloadAuthorization(scope.$index, scope.row)">授权</el-button>
+					<%--<el-button type="info" plain size="mini" @click="downloadPublicKey(scope.$index, scope.row)">公钥</el-button>--%>
+					<%--<el-button type="warning" plain size="mini" @click="downloadCipher(scope.$index, scope.row)">密文</el-button>--%>
+					<el-button type="danger" plain size="mini" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -131,9 +132,20 @@
 					<el-form-item label="截止时间" prop="byTime">
 						<el-date-picker type="date" placeholder="选择截止时间" v-model="form.byTime"></el-date-picker>
 					</el-form-item>
-					<el-form-item label="授权模块" prop="authorizationModule">
-						<el-input v-model="form.authorizationModule" auto-complete="off" placeholder="请输入授权模块"></el-input>
-					</el-form-item>
+					<%--<el-form-item label="授权模块" prop="authorizationModule">--%>
+						<%--<el-input v-model="form.authorizationModule" auto-complete="off" placeholder="请输入授权模块"></el-input>--%>
+					<%--</el-form-item>--%>
+
+				<el-form-item label="授权模块" prop="authorizationModule" >
+				<el-select filterable  value-key="menuNumber" v-model="form.authorizationModule" multiple placeholder="请选择" style="width: 300px;">
+					<el-option
+							v-for="item in options"
+							:key="item.menuNumber"
+							:label="item.nameTheMenu"
+							:value="item.menuNumber">
+					</el-option>
+				</el-select>
+				</el-form-item>
 					<%--<el-form-item label="明文" prop="clear">--%>
 						<%--<el-input v-model="form.clear" auto-complete="off" placeholder="请输入明文"></el-input>--%>
 					<%--</el-form-item>--%>
@@ -199,6 +211,8 @@
                     downloadPublicKey:'${webRoot}/keysignatureController.do?downloadPublicKey&id=',
                     downloadCipher:'${webRoot}/keysignatureController.do?downloadCipher&id=',
                     publicKeyCheck:'${webRoot}/keysignatureController.do?publicKeyCheck',
+                    downloadAuthorization:'${webRoot}/keysignatureController.do?downloadAuthorization&id=',
+                    getAuthorizationModule:'${webRoot}/keysignatureController.do?getAuthorizationModule',
 
 
 				},
@@ -223,11 +237,10 @@
                         { min: 0, max: 15, message: '长度在15个字符之内', trigger: 'blur' }
                     ],
                     byTime: [
-                        { type: 'date', required: true, message: '请选择截止时间', trigger: 'change' }
+                        { required: true, message: '请选择截止时间', trigger: 'change' }
                     ],
                     authorizationModule: [
-                        { required: true, message: '请输入授权模块', trigger: 'blur' },
-                        { min: 0, max: 50, message: '长度在50个字符之内', trigger: 'blur' }
+                        { required: true, message: '请输入授权模块', trigger: 'change' }
                     ],
 
 				},
@@ -248,6 +261,10 @@
                 // 限制开始时间
                 pickerOptionsStart: {},
                 pickerOptionsEnd: {},
+
+				//授权模块下拉框。
+                options: [],
+
 
 				//数据字典
 			}
@@ -330,6 +347,20 @@
 					this.listLoading = false;
 				});
 			},
+			//获取授权模块，下拉框。
+            getAuthorizationModule() {
+                this.$http.get(this.url.getAuthorizationModule).then((res) => {
+                    this.options=res.data.obj;
+
+                //console.log(this.options);
+
+				// for (var i = 0; i < datas.length; i++) {
+                //     var data = datas[i];
+				//
+                // }
+            });
+
+            },
 			//删除
 			handleDel: function (index, row) {
 				this.$confirm('确认删除该记录吗?', '提示', {
@@ -354,6 +385,8 @@
 			handleEdit: function (index, row) {
 				this.formTitle='编辑';
 				this.formVisible = true;
+				//字符串转数组。
+                row.authorizationModule = row.authorizationModule.split(",");
 				this.form = Object.assign({}, row);
 			},
 			//显示新增界面
@@ -376,6 +409,9 @@
 						//this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.formLoading = true;
 							let para = Object.assign({}, this.form);
+
+							//数组转换字符串
+                        	para.authorizationModule = para.authorizationModule.join(",");
 
 							para.byTime = !para.byTime ? '' : utilFormatDate(new Date(para.byTime), 'yyyy-MM-dd');
 
@@ -461,6 +497,10 @@
             downloadPublicKey: function (index, row) {
                 window.location.href = this.url.downloadPublicKey+row.id;
             },
+			//下载授权文件
+            downloadAuthorization: function (index, row) {
+                window.location.href = this.url.downloadAuthorization+row.id;
+            },
             //下载密文
             downloadCipher: function (index, row) {
                 window.location.href = this.url.downloadCipher+row.id;
@@ -518,6 +558,7 @@
 		mounted() {
 			this.initDictsData();
 			this.getKeysignatures();
+			this.getAuthorizationModule();
 		}
 	});
 
