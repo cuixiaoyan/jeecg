@@ -260,7 +260,7 @@
 	
 	
 	<!-- 在线聊天 -->
-	<%@include file="/context/layui.jsp"%>
+	<%--<%@include file="/context/layui.jsp"%>--%>
 	<script type="text/javascript">
 	function checkput(){
 		var name = $("#searchbox").val();
